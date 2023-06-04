@@ -1,0 +1,21 @@
+.grid {
+    width: 550px;
+    height: 520px;
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(25px, 1fr));
+    grid-template-rows: repeat(auto-fill, minmax(25px, 1fr));
+    grid-gap: 1px; 
+    background-color: #ddd;
+    padding: 10px; 
+    box-sizing: border-box;
+  }
+  
+  .cell {
+    /* padding-bottom: 100%;  */
+    background-color: #fff; 
+    border: 1px solid black; 
+  }
+  
+  .cell.alive {
+    background-color: #333; 
+  }
