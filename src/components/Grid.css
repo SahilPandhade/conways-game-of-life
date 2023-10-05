@@ -1,20 +1,18 @@
 .grid {
-    width: 550px;
-    height: 520px;
-    display: grid;
-    grid-template-columns: repeat(20, minmax(25px, 1fr));
-    grid-template-rows: repeat(20, minmax(25px, 1fr));
-    grid-gap: 1px; 
-    background-color: #ddd;
-    box-sizing: border-box;
-  }
-  
-  .cell {
-    
-    background-color: #fff; 
-    border: 1px solid black; 
-  }
-  
-  .cell.alive {
-    background-color: #333; 
-  }
+  width: 80vw;
+  height: 90vh;
+  display: grid;
+  grid-gap: 1px;
+  background-color: #ddd;
+  box-sizing: border-box;
+}
+
+.cell {
+  cursor: pointer;
+  background-color: #fff;
+  border: 1px solid black;
+}
+
+.cell.alive {
+  background-color: #333;
+}
