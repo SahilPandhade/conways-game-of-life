@@ -5,12 +5,11 @@ import DropDown from './DropDown/DropDown';
 import { GameContext } from '../context/Context';
 
 const Game = () => {
-  const { gridState, setGridState, startSim, setStartSim, updateGrid, reset, setReset,setRows,setCols } = useContext(GameContext)
-  // const [dimensions,setDimensions] = useState(20)
+  const { gridState, setGridState, startSim, setStartSim, updateGrid, reset, setReset, setRows, setCols, currentlyAliveCells, currentlyDeadCells } = useContext(GameContext)
+  const [dimensions, setDimensions] = useState(40)
   const handleCellClick = ({ row, col }: { row: number; col: number }) => {
     const newGrid = [...gridState];
     newGrid[row][col] = !newGrid[row][col];
-
     setGridState(newGrid);
   }
 
@@ -22,9 +21,9 @@ const Game = () => {
     setStartSim(false);
   };
 
-  const handleResize = ()=>{
-    // setRows(dimensions)
-    // setCols(dimensions)
+  const handleResize = () => {
+    setRows(dimensions)
+    setCols(dimensions)
   }
   return (
     <div className='game-container'>
@@ -37,15 +36,23 @@ const Game = () => {
           (
             <>
               <button className='start-btn' onClick={handleStartClick}>Start</button>
-              {/* <input type="number" value={dimensions} onChange={(e)=>setDimensions(parseInt(e.target.value))}/>
-              <button className='resize-btn' onClick={handleResize}>Resize</button> */}
+              <div style={{display:'flex',flexDirection:'row',gap:'10px'}}>
+                <input type="number" value={dimensions} onChange={(e) => setDimensions(parseInt(e.target.value))} />
+                <button className='resize-btn' onClick={handleResize}>Resize</button>
+              </div>
             </>
           )
         }
         <button className='reset-btn' onClick={() => { setReset(!reset) }}>Reset</button>
         <DropDown />
+        <div style={{ display: 'flex', flexDirection: 'row', gap: '10px' }}>
+          <div >Born: {currentlyAliveCells}</div>
+          <div>Dead: {currentlyDeadCells}</div>
+        </div>
       </div>
-      <Grid grid={gridState} onCellClick={handleCellClick} />
+      <div>
+        <Grid grid={gridState} onCellClick={handleCellClick} />
+      </div>
 
     </div>
   )
