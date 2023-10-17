@@ -1,15 +1,15 @@
 {
   "files": {
-    "main.css": "/conways-game-of-life/static/css/main.3050a727.css",
-    "main.js": "/conways-game-of-life/static/js/main.e4c2e71c.js",
+    "main.css": "/conways-game-of-life/static/css/main.ad627046.css",
+    "main.js": "/conways-game-of-life/static/js/main.393b6c77.js",
     "static/js/787.e0a4cb5c.chunk.js": "/conways-game-of-life/static/js/787.e0a4cb5c.chunk.js",
     "index.html": "/conways-game-of-life/index.html",
-    "main.3050a727.css.map": "/conways-game-of-life/static/css/main.3050a727.css.map",
-    "main.e4c2e71c.js.map": "/conways-game-of-life/static/js/main.e4c2e71c.js.map",
+    "main.ad627046.css.map": "/conways-game-of-life/static/css/main.ad627046.css.map",
+    "main.393b6c77.js.map": "/conways-game-of-life/static/js/main.393b6c77.js.map",
     "787.e0a4cb5c.chunk.js.map": "/conways-game-of-life/static/js/787.e0a4cb5c.chunk.js.map"
   },
   "entrypoints": [
-    "static/css/main.3050a727.css",
-    "static/js/main.e4c2e71c.js"
+    "static/css/main.ad627046.css",
+    "static/js/main.393b6c77.js"
   ]
 }
