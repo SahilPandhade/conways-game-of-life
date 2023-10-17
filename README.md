@@ -1,6 +1,6 @@
 # Conway's Game of Life
 
-A implementation of Popular Cellular automaton Conway's Game of Life in React.JS
+A implementation of Popular Cellular automaton Conway's Game of Life in React.JS and Typescript
 
 ## What is Conway's Game of Life
 
@@ -18,3 +18,32 @@ These rules, which compare the behaviour of the automaton to real life, can be c
 Any live cell with two or three live neighbours survives.
 Any dead cell with three live neighbours becomes a live cell.
 All other live cells die in the next generation. Similarly, all other dead cells stay dead.
+
+### Version 2
+
+The current version has a new dropdown option to select a predefined pattern to observe the output for the chosen options.
+Currently the patterns supported are:
+1. Gosper-Glider
+2. LWSS
+3. Glider
+4. Pulsar
+5. Beehive
+6. Acorn
+
+## What I am working on next ?
+
+I will be adding more predefined patterns to the application for better user experience.Also I am planning to add a option for user to resize the grid size and the ability for user to see in real-time the number of cells alive/dead in the current generation.
+
+Thank you for visiting!
+
+
+## Authors
+
+- [@SahilPandhade](https://github.com/SahilPandhade)
+
+
+## Acknowledgements
+
+ - [Conway's Game of Life](https://en.wikipedia.org/wiki/Conway%27s_Game_of_Life)
+
+
