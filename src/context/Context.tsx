@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useRef, createContext } from 'react';
-import { GameContextProps, GameProviderProps } from '../constants/Types';
+import { GameContextProps, GameProviderProps, GridStateType } from '../constants/Types';
+import { createInitialPattern } from '../constants/helper';
 
 const defaultContext: GameContextProps = {
     rows: 20,
@@ -14,174 +15,48 @@ const defaultContext: GameContextProps = {
     setReset: () => { },
     timerRef: { current: null },
     updateGrid: () => { },
-    countNeighbour: () => 0,
     ChangeInitialPattern: () => { },
-    currentlyAliveCells:0,
-    currentlyDeadCells:0,
+    currentlyAliveCells: 0,
+    currentlyDeadCells: 0,
+    generation: 0,
+    setGeneration: () => { },
+    generationHistory: [Array.from({ length: 20 }, () => Array(20).fill(false))],
+    setGenerationHistory: () => { },
 };
 
 const GameContext = createContext<GameContextProps>(defaultContext);
 
 const GameProvider = ({ children }: GameProviderProps) => {
-    const [gridState, setGridState] = useState<boolean[][]>([]);
+    const [gridState, setGridState] = useState<GridStateType>([]);
     const [startSim, setStartSim] = useState(false);
     const [reset, setReset] = useState(false);
     const [rows, setRows] = useState(40);
     const [cols, setCols] = useState(40)
     const timerRef = useRef<NodeJS.Timeout | null>(null);
 
-    const [currentlyAliveCells,setCurrentlyAliveCells] = useState<number>(0)
-    const [currentlyDeadCells,setCurrentlyDeadCells] = useState<number>(0)
+    const [generation, setGeneration] = useState(0);
+    const [generationHistory, setGenerationHistory] = useState<GridStateType[]>([])
+    const [currentlyAliveCells, setCurrentlyAliveCells] = useState<number>(0)
+    const [currentlyDeadCells, setCurrentlyDeadCells] = useState<number>(0)
 
-    const generateEmptyGrid = (rows:number, cols:number) => {
+    const generateEmptyGrid = (rows: number, cols: number) => {
         return Array.from({ length: rows }, () => Array(cols).fill(false));
     };
     const ChangeInitialPattern = (option: string = "") => {
-        const newGrid:boolean[][] = generateEmptyGrid(rows,cols)
-        const centerOfRows = Math.floor(rows / 2);
-        const centerOfCols = Math.floor(cols / 2);
-        if (option === 'lwss') {
-            newGrid[centerOfRows - 1][centerOfCols + 2] = true;
-            newGrid[centerOfRows - 1][centerOfCols + 5] = true;
-            newGrid[centerOfRows][centerOfCols + 1] = true;
-            newGrid[centerOfRows + 1][centerOfCols + 1] = true;
-            newGrid[centerOfRows + 1][centerOfCols + 3] = true;
-            newGrid[centerOfRows + 1][centerOfCols + 4] = true;
-            newGrid[centerOfRows + 2][centerOfCols + 1] = true;
-            newGrid[centerOfRows + 2][centerOfCols + 2] = true;
-            newGrid[centerOfRows + 2][centerOfCols + 5] = true;
-        }
-        else if (option === "snake") {
-            newGrid[centerOfRows][centerOfCols] = true;
-            newGrid[centerOfRows][centerOfCols + 1] = true;
-            newGrid[centerOfRows][centerOfCols + 2] = true;
-            newGrid[centerOfRows - 1][centerOfCols + 2] = true;
-            newGrid[centerOfRows - 1][centerOfCols + 1] = true;
-            newGrid[centerOfRows - 1][centerOfCols] = true;
-        } else if (option === "glider") {
-            newGrid[centerOfRows - 1][centerOfCols] = true;
-            newGrid[centerOfRows][centerOfCols + 1] = true;
-            newGrid[centerOfRows][centerOfCols + 2] = true;
-            newGrid[centerOfRows - 1][centerOfCols + 2] = true;
-            newGrid[centerOfRows - 2][centerOfCols + 2] = true;
-        } else if (option === "pulsar") {
-            newGrid[centerOfRows - 6][centerOfCols - 4] = true;
-            newGrid[centerOfRows - 6][centerOfCols - 3] = true;
-            newGrid[centerOfRows - 6][centerOfCols - 2] = true;
+        const newGrid = createInitialPattern(option,rows,cols)
+        // else {
+        //     updateGrid()
+        // }
+        setCurrentlyAliveCells(0)
+        setCurrentlyDeadCells(0)
+        setGeneration(0)
+        setGenerationHistory([newGrid])
 
-            newGrid[centerOfRows - 4][centerOfCols - 6] = true;
-            newGrid[centerOfRows - 3][centerOfCols - 6] = true;
-            newGrid[centerOfRows - 2][centerOfCols - 6] = true;
-
-            newGrid[centerOfRows - 4][centerOfCols - 1] = true;
-            newGrid[centerOfRows - 3][centerOfCols - 1] = true;
-            newGrid[centerOfRows - 2][centerOfCols - 1] = true;
-
-            newGrid[centerOfRows - 1][centerOfCols - 4] = true;
-            newGrid[centerOfRows - 1][centerOfCols - 3] = true;
-            newGrid[centerOfRows - 1][centerOfCols - 2] = true;
-
-            //Block-2
-            newGrid[centerOfRows - 6][centerOfCols + 4] = true;
-            newGrid[centerOfRows - 6][centerOfCols + 3] = true;
-            newGrid[centerOfRows - 6][centerOfCols + 2] = true;
-
-            newGrid[centerOfRows - 4][centerOfCols + 6] = true;
-            newGrid[centerOfRows - 3][centerOfCols + 6] = true;
-            newGrid[centerOfRows - 2][centerOfCols + 6] = true;
-
-            newGrid[centerOfRows - 4][centerOfCols + 1] = true;
-            newGrid[centerOfRows - 3][centerOfCols + 1] = true;
-            newGrid[centerOfRows - 2][centerOfCols + 1] = true;
-
-            newGrid[centerOfRows - 1][centerOfCols + 4] = true;
-            newGrid[centerOfRows - 1][centerOfCols + 3] = true;
-            newGrid[centerOfRows - 1][centerOfCols + 2] = true;
-
-            //Block-3
-            newGrid[centerOfRows + 1][centerOfCols - 4] = true;
-            newGrid[centerOfRows + 1][centerOfCols - 3] = true;
-            newGrid[centerOfRows + 1][centerOfCols - 2] = true;
-
-            newGrid[centerOfRows + 4][centerOfCols - 6] = true;
-            newGrid[centerOfRows + 3][centerOfCols - 6] = true;
-            newGrid[centerOfRows + 2][centerOfCols - 6] = true;
-
-            newGrid[centerOfRows + 6][centerOfCols - 4] = true;
-            newGrid[centerOfRows + 6][centerOfCols - 3] = true;
-            newGrid[centerOfRows + 6][centerOfCols - 2] = true;
-
-            newGrid[centerOfRows + 4][centerOfCols - 1] = true;
-            newGrid[centerOfRows + 3][centerOfCols - 1] = true;
-            newGrid[centerOfRows + 2][centerOfCols - 1] = true;
-
-            //Block-4
-            newGrid[centerOfRows + 1][centerOfCols + 4] = true;
-            newGrid[centerOfRows + 1][centerOfCols + 3] = true;
-            newGrid[centerOfRows + 1][centerOfCols + 2] = true;
-
-            newGrid[centerOfRows + 4][centerOfCols + 6] = true;
-            newGrid[centerOfRows + 3][centerOfCols + 6] = true;
-            newGrid[centerOfRows + 2][centerOfCols + 6] = true;
-
-            newGrid[centerOfRows + 6][centerOfCols + 4] = true;
-            newGrid[centerOfRows + 6][centerOfCols + 3] = true;
-            newGrid[centerOfRows + 6][centerOfCols + 2] = true;
-
-            newGrid[centerOfRows + 4][centerOfCols + 1] = true;
-            newGrid[centerOfRows + 3][centerOfCols + 1] = true;
-            newGrid[centerOfRows + 2][centerOfCols + 1] = true;
-        } else if (option === "beehive") {
-            newGrid[centerOfRows - 1][centerOfCols] = true;
-            newGrid[centerOfRows - 1][centerOfCols + 1] = true;
-            newGrid[centerOfRows][centerOfCols - 1] = true;
-            newGrid[centerOfRows + 1][centerOfCols] = true;
-            newGrid[centerOfRows + 1][centerOfCols + 1] = true;
-            newGrid[centerOfRows][centerOfCols + 2] = true;
-        }
-        else if (option === 'gosper-glider') {
-            const gliderGun = [
-                [1, 5], [1, 6], [2, 5], [2, 6],// block
-                [11, 5], [11, 6], [11, 7], [12, 4], [12, 8], [13, 3], [13, 9], [14, 3], [14, 9], [15, 6], // left part
-                [16, 4], [16, 8], [17, 5], [17, 6], [17, 7], [18, 6], // right part
-                [21, 3], [21, 4], [21, 5], [22, 3], [22, 4], [22, 5], [23, 2], [23, 6], [25, 1], [25, 2], [25, 6], [25, 7], // left part
-                [35, 3], [35, 4], [36, 3], [36, 4] // right part
-            ];
-
-            gliderGun.forEach(([x, y]) => {
-                const adjustedX = centerOfCols + x - 18;  // Adjusted for centering
-                const adjustedY = centerOfRows + y - 6;    // Adjusted for centering
-
-                if (adjustedX >= 0 && adjustedX < cols && adjustedY >= 0 && adjustedY < rows) {
-                    newGrid[adjustedY][adjustedX] = true;
-                }
-            });
-        }
-        else if (option === "acorn") {
-            const acornCoords = [
-                [1, 0],
-                [3, 1],
-                [0, 2], [1, 2], [4, 2], [5, 2], [6, 2]
-            ];
-
-            acornCoords.forEach(([x, y]) => {
-                const adjustedX = centerOfCols + x - Math.floor(acornCoords.length / 2);
-                const adjustedY = centerOfCols + y - Math.floor(acornCoords[0].length / 2);
-
-                if (adjustedX >= 0 && adjustedX < cols && adjustedY >= 0 && adjustedY < rows) {
-                    newGrid[adjustedY][adjustedX] = true;
-                }
-            });
-        }
-        else {
-            updateGrid()
-        }
-
-         setGridState(newGrid)
+        setGridState(newGrid)
     }
     const updateGrid = () => {
         setGridState((prevGrid: boolean[][]) => {
-            const newGrid:boolean[][] = generateEmptyGrid(rows,cols);
+            const newGrid: boolean[][] = generateEmptyGrid(rows, cols);
             let aliveCells = 0;
             let deadCells = 0;
             for (let i = 0; i < rows; i++) {
@@ -196,16 +71,18 @@ const GameProvider = ({ children }: GameProviderProps) => {
                         aliveCells++
                     } else {
                         newGrid[i][j] = currentCell; // Cell remains the same
-                        if(currentCell) aliveCells++
+                        if (currentCell) aliveCells++
                     }
                 }
             }
+            setGenerationHistory((prevGenerations)=>[...prevGenerations,newGrid])
             setCurrentlyAliveCells(aliveCells)
             setCurrentlyDeadCells(deadCells)
+            setGeneration((prevGeneration) => prevGeneration + 1)
             return newGrid;
         });
-    }
 
+    }
     const countNeighbour = (gridState: boolean[][], row: number, col: number) => {
         let count = 0;
         for (let i = -1; i <= 1; i++) {
@@ -230,7 +107,9 @@ const GameProvider = ({ children }: GameProviderProps) => {
         setGridState(grid)
         setCurrentlyAliveCells(0)
         setCurrentlyDeadCells(0)
-    }, [reset,rows,cols])
+        setGeneration(0)
+        setGenerationHistory([grid])
+    }, [reset, rows, cols])
 
     useEffect(() => {
         if (startSim) {
@@ -258,10 +137,13 @@ const GameProvider = ({ children }: GameProviderProps) => {
         setReset,
         timerRef,
         updateGrid,
-        countNeighbour,
         ChangeInitialPattern,
         currentlyAliveCells,
-        currentlyDeadCells
+        currentlyDeadCells,
+        generation,
+        setGeneration,
+        generationHistory,
+        setGenerationHistory
     };
     return (
         <GameContext.Provider value={contextValue}>
